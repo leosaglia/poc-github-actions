@@ -22,7 +22,6 @@ jobs:
       - name: Extract test results
         id: test_results
         run: | 
-          echo "test_results=$(cat test_results.txt)" >> $GITHUB_OUTPUT
           cat test_results.txt
   open-pr:
     runs-on: ubuntu-latest

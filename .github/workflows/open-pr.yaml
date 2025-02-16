@@ -1,0 +1,15 @@
+on:
+  push:
+    branches:
+      - feature*
+  
+jobs:
+  open-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code 
+        uses: actions/checkout@v4
+      - name: Open PR
+        run: gh pr create --base ${{ github.ref }} --head main --title "Open PR from ${{ github.ref }}" --body "This is an open PR from ${{ github.ref }} branch."
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

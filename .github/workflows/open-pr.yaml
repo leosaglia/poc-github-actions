@@ -20,11 +20,15 @@ jobs:
       - run: npm run build --if-present
       - run: npm test
       - name: Save test results
+        id: test_results
         run: |
           totalTests=$(jq '.numTotalTests' results.json)
           passedTests=$(jq '.numPassedTests' results.json)
           echo "total_tests=$totalTests" >> $GITHUB_OUTPUT
           echo "passed_tests=$passedTests" >> $GITHUB_OUTPUT
+    outputs:
+      total_tests: ${{ steps.test_results.outputs.total_tests }}
+      passed_tests: ${{ steps.test_results.outputs.passed_tests }}
           
   open-pr:
     runs-on: ubuntu-latest
@@ -51,6 +55,6 @@ jobs:
         run: |
           gh pr create --base main --head ${{ github.ref }} \
           --title "Open PR from ${{ steps.extract_branch.outputs.branch }}" \
-          --body "This is an open PR from ${{ steps.extract_branch.outputs.branch }} branch. It contains ${{ env.total_tests }} tests, out of which ${{ env.passed_tests }} tests have passed."
+          --body "This is an open PR from ${{ steps.extract_branch.outputs.branch }} branch. It contains ${{ needs.build-and-test.outputs.total_tests }} tests, out of which ${{ needs.build-and-test.outputs.passed_tests }} tests have passed."
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -18,9 +18,7 @@ jobs:
       - name: Check for existing PR
         id: check_pr
         run: |
-          gh pr list --state open --base main --json headRefName > pr_list.txt
-          cat pr_list.txt
-          cat ${{ github.ref }}
+          gh pr list --state open --base main --head ${{ steps.extract_branch.outputs.branch }} --json headRefName > pr_list.txt
           if grep -q "${{ steps.extract_branch.outputs.branch }}" pr_list.txt; then
             echo "pr_exists=true" >> $GITHUB_OUTPUT
           else

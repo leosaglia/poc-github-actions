@@ -10,6 +10,6 @@ jobs:
       - name: Check out repository code 
         uses: actions/checkout@v4
       - name: Open PR
-        run: gh pr create --base ${{ github.ref }} --head main --title "Open PR from ${{ github.ref }}" --body "This is an open PR from ${{ github.ref }} branch."
+        run: gh pr create --base ${{ github.ref }} --head main --title "Open PR from ${{ github.ref }}" --body "This is an open PR from ${{ github.ref }} branch. Alterações feitas no código por ${{ github.actor }}."
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

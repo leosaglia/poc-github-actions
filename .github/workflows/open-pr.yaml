@@ -4,7 +4,6 @@ on:
       - feature**
 
 permissions:
-  contents: read
   pull-requests: write
 
 jobs:
@@ -13,7 +12,10 @@ jobs:
     steps:
       - name: Check out repository code 
         uses: actions/checkout@v4
+      - name: Extract branch name
+        id: extract_branch
+        run: echo "::set-output name=branch::${GITHUB_REF#refs/heads/}"
       - name: Open PR
-        run: gh pr create --base ${{ github.ref }} --head main --title "Open PR from ${{ github.ref }}" --body "This is an open PR from ${{ github.ref }} branch. Alterações feitas no código por ${{ github.actor }}."
+        run: gh pr create --base main --head ${{ github.ref }} --title "Open PR from ${{ steps.extract_branch.outputs.branch }}" --body "This is an open PR from ${{ steps.extract_branch.outputs.branch }} branch."
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "vitest run"
+    "test": "vitest run --reporter=json --outputFile results.json"
   },
   "author": "",
   "license": "ISC",

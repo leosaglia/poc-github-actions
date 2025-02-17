@@ -1,8 +1,10 @@
+# Evento que irá acionar o workflow
 on:
   push:
     branches:
       - feature**
 
+# Permissão para abrir o pull request
 permissions:
   pull-requests: write
 
@@ -11,7 +13,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Check out repository code
+        uses: actions/checkout@v4
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
@@ -21,6 +24,7 @@ jobs:
       - run: npm test
       - name: Save test results
         id: test_results
+        # obter o número total de testes e o número de testes aprovados a partir do json gerado pelo comando de teste
         run: |
           totalTests=$(jq '.numTotalTests' results.json)
           passedTests=$(jq '.numPassedTests' results.json)
@@ -36,11 +40,14 @@ jobs:
     steps:
       - name: Check out repository code 
         uses: actions/checkout@v4
+
       - name: Extract branch name
         id: extract_branch
         run: echo "branch=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
+
       - name: Check for existing PR
         id: check_pr
+        # lista todos os PRs abertos, utilizando github cli e verifica se já existe um PR para a branch atual
         run: |
           gh pr list --state open --base main --head ${{ steps.extract_branch.outputs.branch }} --json headRefName > pr_list.txt
           if grep -q "${{ steps.extract_branch.outputs.branch }}" pr_list.txt; then
@@ -50,11 +57,17 @@ jobs:
           fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Open PR
         if: steps.check_pr.outputs.pr_exists == 'false'
+        # cria um PR com o título e corpo especificados usando github cli
         run: |
-          gh pr create --base main --head ${{ github.ref }} \
+          gh pr create \
+          --base main \
+          --head ${{ github.ref }} \
           --title "Open PR from ${{ steps.extract_branch.outputs.branch }}" \
-          --body "This is an open PR from ${{ steps.extract_branch.outputs.branch }} branch. It contains ${{ needs.build-and-test.outputs.total_tests }} tests, out of which ${{ needs.build-and-test.outputs.passed_tests }} tests have passed."
+          --body "This is an open PR from ${{ steps.extract_branch.outputs.branch }} branch. \
+          It contains ${{ needs.build-and-test.outputs.total_tests }} tests, out of which \
+          ${{ needs.build-and-test.outputs.passed_tests }} tests have passed."
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

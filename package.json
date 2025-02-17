@@ -1,0 +1,14 @@
+{
+  "name": "poc-github-actions",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "vitest run --reporter=json --outputFile results.json"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "vitest": "^3.0.5"
+  }
+}

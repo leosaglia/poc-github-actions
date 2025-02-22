@@ -22,7 +22,12 @@ jobs:
       - name: Create ECR repository if it doesn't exist
         run: |
           aws ecr describe-repositories --repository-names poc-github-actions || \
-          aws ecr create-repository --repository-name poc-github-actions \
+          aws ecr create-repository --repository-name poc-github-actions
+          
+      - name: Create ECR lifecycle policy if it doesn't exist
+        run: |
+          aws ecr get-lifecycle-policy \
+            --repository-name poc-github-actions || \
           aws ecr put-lifecycle-policy \
             --repository-name poc-github-actions \
             --lifecycle-policy-text file://lifecycle-policy.json
